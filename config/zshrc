@@ -1,0 +1,17 @@
+# Developer Desktop configuration
+export EDITOR=nano
+export VISUAL=nano
+
+# Navigation and Git shortcuts
+alias ll='ls -lah --group-directories-first'
+alias la='ls -A'
+alias c='clear'
+alias gs='git status --short'
+alias gl='git log --oneline -10'
+
+# Built-in Zsh colors and prompt
+autoload -Uz colors && colors
+PROMPT='%F{cyan}%n@%m%f:%F{blue}%~%f %# '
+
+# Fuzzy history search
+source <(fzf --zsh)
