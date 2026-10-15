@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Read the first CPU sample.
+# JARVIS colors (enabled only for interactive terminals)
+if [[ -t 1 ]]; then
+    CYAN=$'\033[38;2;72;214;232m'
+    BLUE=$'\033[38;2;87;148;242m'
+    MUTED=$'\033[38;2;130;149;168m'
+    WHITE=$'\033[38;2;215;224;234m'
+    RESET=$'\033[0m'
+else
+    CYAN=''
+    BLUE=''
+    MUTED=''
+    WHITE=''
+    RESET=''
+fi
+
 read_cpu() {
     awk '/^cpu / {
         idle = $5 + $6
@@ -17,14 +31,12 @@ read -r total2 idle2 < <(read_cpu)
 
 total_diff=$((total2 - total1))
 idle_diff=$((idle2 - idle1))
+cpu=0
 
 if (( total_diff > 0 )); then
     cpu=$(( (total_diff - idle_diff) * 100 / total_diff ))
-else
-    cpu=0
 fi
 
-# Memory usage from /proc/meminfo.
 read -r mem_total mem_available < <(
     awk '
         /^MemTotal:/     { total = $2 }
@@ -36,31 +48,39 @@ read -r mem_total mem_available < <(
 mem_used=$((mem_total - mem_available))
 mem_percent=$((mem_used * 100 / mem_total))
 
-printf '\n'
-printf '  DEVELOPER DESKTOP\n'
-printf '  -----------------\n'
-printf '  CPU Usage:  %s%%\n' "$cpu"
-printf '  RAM Usage:  %s%% (%s / %s MiB)\n' \
-    "$mem_percent" \
-    "$((mem_used / 1024))" \
-    "$((mem_total / 1024))"
+uptime_seconds=$(cut -d. -f1 /proc/uptime)
+days=$((uptime_seconds / 86400))
+hours=$((uptime_seconds % 86400 / 3600))
+minutes=$((uptime_seconds % 3600 / 60))
 
-# WSL may not expose battery information.
-battery_found=false
+if (( days > 0 )); then
+    uptime="${days}d ${hours}h ${minutes}m"
+else
+    uptime="${hours}h ${minutes}m"
+fi
+
+battery='Unavailable'
 for capacity in /sys/class/power_supply/*/capacity; do
-    if [[ -r "$capacity" ]]; then
-        name=${capacity%/capacity}
-        type_file="$name/type"
-        if [[ -r "$type_file" ]] &&
-           [[ $(<"$type_file") == Battery ]]; then
-            printf '  Battery:    %s%%\n' "$(<"$capacity")"
-            battery_found=true
-            break
-        fi
+    [[ -r "$capacity" ]] || continue
+    name=${capacity%/capacity}
+    type_file="$name/type"
+
+    if [[ -r "$type_file" ]] && [[ "$(<"$type_file")" == "Battery" ]]; then
+        battery="$(<"$capacity")%"
+        break
     fi
 done
 
-if [[ "$battery_found" == false ]]; then
-    printf '  Battery:    Not exposed to this Linux environment\n'
-fi
+printf '\n'
+printf '%s  J A R V I S  /  SYSTEM STATUS%s\n' "$CYAN" "$RESET"
+printf '%s  ─────────────────────────────%s\n' "$MUTED" "$RESET"
+printf '%s  COMPUTE%s\n' "$BLUE" "$RESET"
+printf '  %-12s %s%3s%%%s\n' 'CPU LOAD' "$WHITE" "$cpu" "$RESET"
+printf '  %-12s %s%3s%%%s  %s(%s / %s MiB)%s\n' \
+    'MEMORY' "$WHITE" "$mem_percent" "$RESET" "$MUTED" \
+    "$((mem_used / 1024))" "$((mem_total / 1024))" "$RESET"
+printf '\n'
+printf '%s  DEVICE%s\n' "$BLUE" "$RESET"
+printf '  %-12s %s%s%s\n' 'BATTERY' "$WHITE" "$battery" "$RESET"
+printf '  %-12s %s%s%s\n' 'UPTIME' "$WHITE" "$uptime" "$RESET"
 printf '\n'
