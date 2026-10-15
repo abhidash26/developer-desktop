@@ -87,3 +87,11 @@ Check shell configuration syntax with:
 ## License
 
 MIT
+
+## Preview
+
+![JARVIS Developer Environment terminal and system monitor](screenshots/jarvis-terminal.png)
+
+The terminal uses a dark graphite background with cyan and blue accents,
+a Git-aware Zsh prompt, and a lightweight system monitor for CPU, memory,
+battery, and uptime.
