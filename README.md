@@ -1,97 +1,140 @@
-# Developer Desktop
+# JARVIS Developer Environment
 
-A reproducible, keyboard-oriented developer environment for Ubuntu on WSL2.
+A minimal, keyboard-oriented developer environment for Ubuntu on WSL2, inspired by the clean, restrained interface design of JARVIS.
 
-## Features
-
-- Automated installation of a personal Zsh configuration.
-- Short Git and navigation aliases.
-- Fuzzy history search with fzf.
-- CPU, memory and battery status reporting.
-- A setup script that backs up an existing Zsh configuration.
-- A portable project structure managed with Git.
-
-## Requirements
-
-- Ubuntu on WSL2 or a compatible Linux environment.
-- Bash and Git.
-- Zsh and fzf for the configured shell workflow.
-
-The installer does not install operating-system packages. Install missing
-dependencies separately using your distribution's package manager.
-
-## Installation
-
-Clone this repository, enter the project directory, and run:
-
-    chmod +x install.sh
-    ./install.sh
-
-Start Zsh:
-
-    zsh
-
-Run the system monitor:
-
-    ~/.local/bin/developer-status
-
-The installer saves an existing ~/.zshrc to
-~/.config/developer-desktop-backup/zshrc before replacing it, if a backup
-does not already exist.
-
-## Shortcuts
-
-| Command | Purpose |
-| --- | --- |
-| `ll` | Detailed directory listing |
-| `la` | Show hidden files |
-| `c` | Clear the terminal |
-| `gs` | Short Git status |
-| `gl` | Recent Git commits |
-| `Ctrl-R` | Fuzzy history search, when fzf integration is active |
-
-## System monitor
-
-The monitor reads Linux system interfaces to calculate CPU and memory usage.
-It checks whether battery information is exposed by the environment and
-reports when it is unavailable.
-
-CPU utilization is sampled over a one-second interval. Values may vary
-between runs.
-
-## Environment and limitations
-
-This project currently targets the shell and terminal workflow inside WSL2.
-It does not independently configure a Linux window manager, desktop launcher,
-status bar, or window decorations. Those features require a compatible Linux
-desktop environment and additional configuration.
-
-## Project structure
-
-    config/zshrc
-    scripts/system-status.sh
-    install.sh
-    README.md
-    LICENSE
-
-## Testing
-
-Run the monitor with:
-
-    ./scripts/system-status.sh
-
-Check shell configuration syntax with:
-
-    zsh -n config/zshrc
-
-## License
-
-MIT
+The project combines a Git-aware Zsh prompt, fuzzy history search, useful shell shortcuts, and a lightweight system monitor in a consistent dark theme.
 
 ## Preview
 
 ![JARVIS Developer Environment terminal and system monitor](screenshots/jarvis-terminal.png)
 
-The terminal uses a dark graphite background with cyan and blue accents,
-a Git-aware Zsh prompt, and a lightweight system monitor for CPU, memory,
-battery, and uptime.
+## Features
+
+- **JARVIS-inspired prompt:** Cyan label, directory path, and Git branch indicator.
+- **Zsh configuration:** A reproducible shell setup with useful navigation and Git aliases.
+- **Fuzzy search:** fzf integration for interactive history and search workflows.
+- **System monitor:** CPU utilization, memory usage, battery status when available, and uptime.
+- **Setup script:** Installs the configuration and backs up an existing Zsh configuration before replacing it.
+- **Portable configuration:** Shell settings, scripts, tests, and documentation maintained in Git.
+
+## Requirements
+
+- Ubuntu on WSL2 or a compatible Linux environment.
+- Bash and Git.
+- Zsh and fzf.
+
+The installer does not install operating-system packages. Install missing dependencies separately using your distribution's package manager.
+
+## Installation
+
+Clone the repository and enter the project directory:
+
+```bash
+git clone https://github.com/abhidash26/developer-desktop.git
+cd developer-desktop
+```
+
+Run the installer:
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+Start Zsh:
+
+```bash
+zsh
+```
+
+Run the system monitor:
+
+```bash
+~/.local/bin/developer-status
+```
+
+The monitor command is a symbolic link to the script inside the cloned repository. Keep the repository in place while using it.
+
+### Configuration backup
+
+Before replacing an existing `~/.zshrc`, the installer saves a backup at:
+
+```text
+~/.config/developer-desktop-backup/zshrc
+```
+
+The backup is created only if one does not already exist at that location. Keep a separate copy of any custom shell configuration you cannot afford to lose.
+
+## Shortcuts and aliases
+
+| Command | Purpose |
+|---|---|
+| `ll` | Detailed directory listing |
+| `la` | Show hidden files |
+| `c` | Clear the terminal |
+| `..` | Move up one directory |
+| `...` | Move up two directories |
+| `gs` | Short Git status |
+| `gl` | Show recent Git commits |
+| `gd` | Show unstaged changes |
+| `gp` | Pull from the configured Git remote |
+| `Ctrl-R` | Fuzzy history search when fzf integration is active |
+
+## System monitor
+
+Run the monitor directly:
+
+```bash
+./scripts/system-status.sh
+```
+
+The script reads Linux system interfaces to calculate CPU and memory usage, checks for battery information, and reports system uptime.
+
+- CPU utilization is sampled over a one-second interval.
+- Memory usage is calculated from total and available memory.
+- Battery status is shown when the environment exposes it.
+- CPU readings may vary between runs.
+
+## Testing
+
+Run the system monitor test:
+
+```bash
+./tests/test-system-status.sh
+```
+
+Check the shell configuration and script syntax:
+
+```bash
+zsh -n config/zshrc
+bash -n scripts/system-status.sh
+bash -n tests/test-system-status.sh
+```
+
+## Project structure
+
+```text
+developer-desktop/
+├── config/
+│   └── zshrc
+├── docs/
+├── screenshots/
+│   └── jarvis-terminal.png
+├── scripts/
+│   └── system-status.sh
+├── tests/
+│   └── test-system-status.sh
+├── install.sh
+├── LICENSE
+└── README.md
+```
+
+## Scope and limitations
+
+This project currently targets the shell and terminal workflow inside WSL2. It does not independently configure a complete Linux desktop, window manager, application launcher, desktop status bar, or window decorations.
+
+The terminal color scheme is configured separately in Windows Terminal. Additional desktop components would require a compatible desktop environment and further configuration.
+
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE).
