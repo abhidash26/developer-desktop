@@ -1,17 +1,28 @@
-# Developer Desktop configuration
+#JARVIS Dev Environment
 export EDITOR=nano
 export VISUAL=nano
 
-# Navigation and Git shortcuts
+#Navigation:
 alias ll='ls -lah --group-directories-first'
 alias la='ls -A'
 alias c='clear'
-alias gs='git status --short'
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# Git shortcuts
+alias gs='git status --short --branch'
 alias gl='git log --oneline -10'
+alias gd='git diff'
+alias gp='git pull'
 
-# Built-in Zsh colors and prompt
-autoload -Uz colors && colors
-PROMPT='%F{cyan}%n@%m%f:%F{blue}%~%f %# '
+# Git-aware prompt
+autoload -Uz vcs_info
+zstyle ':vcs_info:git:*' formats ' [%b]'
 
-# Fuzzy history search
+precmd() {
+    vcs_info
+    PROMPT='%F{cyan}JARVIS%f %F{blue}%~%f%F{yellow}'"${vcs_info_msg_0_}"'%f %# '
+}
+
+# Fuzzy history, file and directory search
 source <(fzf --zsh)
